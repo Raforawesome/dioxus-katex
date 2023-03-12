@@ -6,7 +6,7 @@ use std::{
 use std::sync::Arc;
 
 use dioxus::prelude::*;
-use dioxus_elements::{div, GlobalAttributes};
+use dioxus_elements::GlobalAttributes;
 
 use katex_wasmbind::KaTeXOptions;
 
@@ -50,14 +50,19 @@ impl UseKatex {
     pub fn compile(&self, input: &str) -> LazyNodes {
         let config = self.katex.borrow_mut();
         let out = config.render(input);
-        LazyNodes::new(move |cx: NodeFactory| -> VNode {
-            cx.element(
-                div,
-                &[],
-                cx.bump().alloc([div.dangerous_inner_html(cx, format_args!("{out}", out = out))]),
-                &[],
-                None,
-            )
+        LazyNodes::new(move |cx| -> VNode {
+			cx.render(rsx!(
+				div {
+					dangerous_inner_html: format_args!("{out}")
+				}
+			)).unwrap()
+            // cx.element(
+            //     div,
+            //     &[],
+            //     cx.bump().alloc([div.dangerous_inner_html(cx, format_args!("{out}", out = out))]),
+            //     &[],
+            //     None,
+            // )
         })
     }
 }
